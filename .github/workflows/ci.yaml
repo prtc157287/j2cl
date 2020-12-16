@@ -60,7 +60,7 @@ jobs:
           chmod +x "${GITHUB_WORKSPACE}/bin/bazel"
           alias bazel="${GITHUB_WORKSPACE}/bin/bazel"
 
-       - name: Build and Test
-         run: ./build_test.sh
+      - name: Build and Test
+        run: ./build_test.sh
 
 
