@@ -66,7 +66,7 @@ jobs:
         run: |
           curl -LO "https://github.com/bazelbuild/bazelisk/releases/download/${BAZELISK_VERSION}/bazelisk-${{ matrix.bazelisk-os }}-amd64"
           mkdir -p "${GITHUB_WORKSPACE}/bin/"
-          mv bazelisk-linux-amd64 "${GITHUB_WORKSPACE}/bin/bazel"
+          mv bazelisk-${{ matrix.bazelisk-os }}-amd64 "${GITHUB_WORKSPACE}/bin/bazel"
           chmod +x "${GITHUB_WORKSPACE}/bin/bazel"
           alias bazel="${GITHUB_WORKSPACE}/bin/bazel"
 
