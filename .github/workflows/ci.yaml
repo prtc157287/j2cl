@@ -14,7 +14,7 @@
 
 # Format reference: https://docs.github.com/en/actions/reference
 
-name: Compiler CI
+name: build and tests
 
 # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#on
 on:
@@ -71,6 +71,6 @@ jobs:
           alias bazel="${GITHUB_WORKSPACE}/bin/bazel"
 
       - name: Build and Test
-        run: ./build_test.sh
+        run: ./build_test.sh CI
 
 
