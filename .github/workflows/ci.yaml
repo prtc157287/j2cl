@@ -28,6 +28,7 @@ on:
 
 env:
   BAZELISK_VERSION: '1.5.0'
+  BAZELISK_BIN: "${HOME}/bin/bazelisk"
 
 # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobs
 jobs:
@@ -58,12 +59,12 @@ jobs:
       - name: Install bazelisk
         if: steps.bazelisk-cache.outputs.cache-hit != 'true'
         run: |
-          mkdir -p ${HOME}/bin/bazelisk
-          curl -L "https://github.com/bazelbuild/bazelisk/releases/download/${BAZELISK_VERSION}/bazelisk-${{ matrix.bazelisk-os }}-amd64" -o ${HOME}/bin/bazelisk/bazel
-          chmod +x "${HOME/bin/bazelisk/bazel"
-
+          mkdir -p ${BAZELISK_BIN}
+          curl -L "https://github.com/bazelbuild/bazelisk/releases/download/${BAZELISK_VERSION}/bazelisk-${{ matrix.bazelisk-os }}-amd64" -o ${BAZELISK_BIN}/bazel
+          chmod +x "${BAZELISK_BIN}/bazel"
+      
       - name: Alias bazel
-        run:  alias bazel="${HOME}/bin/bazelisk/bazel"
+        run:  alias bazel="${BAZELISK_BIN}/bazel"
 
       - name: Mount bazel cache
         uses: actions/cache@v2
