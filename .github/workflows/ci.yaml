@@ -19,7 +19,7 @@ name: build and tests
 # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#on
 on:
   push:
-    branches: [ master, github_actions ]
+    branches: [ master ]
   pull_request:
     branches: [ master ]
   schedule:
@@ -33,9 +33,9 @@ env:
 jobs:
   build-and-test:
     name: Build and Test
-    
+
     runs-on: ${{ matrix.os }}
-    
+
     strategy:
       matrix:
         include:
@@ -43,34 +43,42 @@ jobs:
             bazelisk-os: linux
           - os: macos-latest
             bazelisk-os: darwin
-    
-    steps:
-      - name: Setup Java
-        # https://github.com/marketplace/actions/setup-java-jdk
-        uses: actions/setup-java@v1
-        with:
-          java-version: '11'
-          java-package: jdk
-          architecture: x64
 
+    steps:
       - name: Checkout current commit
         uses: actions/checkout@v2
 
-      - name: Mount bazel cache
-        uses: actions/cache@v1
+      - name: Mount bazelisk binary cache
+        id: bazelisk-cache
+        uses: actions/cache@v2
         with:
-          path: "/home/runner/.cache/bazel"
-          key: bazel
+          path: ${HOME}/bin/bazelisk
+          key: ${{ runner.os }}-binary-${BAZELISK_VERSION}
 
       - name: Install bazelisk
+        if: steps.bazelisk-cache.outputs.cache-hit != 'true'
         run: |
-          curl -LO "https://github.com/bazelbuild/bazelisk/releases/download/${BAZELISK_VERSION}/bazelisk-${{ matrix.bazelisk-os }}-amd64"
-          mkdir -p "${GITHUB_WORKSPACE}/bin/"
-          mv bazelisk-${{ matrix.bazelisk-os }}-amd64 "${GITHUB_WORKSPACE}/bin/bazel"
-          chmod +x "${GITHUB_WORKSPACE}/bin/bazel"
-          alias bazel="${GITHUB_WORKSPACE}/bin/bazel"
+          mkdir -p ${HOME}/bin/bazelisk
+          curl -L "https://github.com/bazelbuild/bazelisk/releases/download/${BAZELISK_VERSION}/bazelisk-${{ matrix.bazelisk-os }}-amd64" -o ${HOME}/bin/bazelisk/bazel
+          chmod +x "${HOME}/downloads/bazel"
+
+      - name: Alias bazel
+        run:  alias bazel="${HOME}/bin/bazelisk/bazel"
+
+      - name: Mount bazel cache
+        uses: actions/cache@v2
+        with:
+          path: "${HOME}/.cache/bazel"
+          key: ${{ runner.os }}-bazel
+
+      - name: Configure bazel
+        run: |
+          echo "startup --output_base=$HOME/.cache/bazel" >> .bazelrc
+          # Avoid progress indicators that can blow out log which makes using WEB UI difficult
+          echo "common --noshow_progress" >> .bazelrc
+          echo "common --noshow_loading_progress" >> .bazelrc
+          # This is so we understand failures better
+          echo "build --verbose_failures" >> .bazelrc
 
       - name: Build and Test
         run: ./build_test.sh CI
-
-
