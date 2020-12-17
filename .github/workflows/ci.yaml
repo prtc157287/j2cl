@@ -60,7 +60,7 @@ jobs:
         run: |
           mkdir -p ${HOME}/bin/bazelisk
           curl -L "https://github.com/bazelbuild/bazelisk/releases/download/${BAZELISK_VERSION}/bazelisk-${{ matrix.bazelisk-os }}-amd64" -o ${HOME}/bin/bazelisk/bazel
-          chmod +x "${HOME}/downloads/bazel"
+          chmod +x "${HOME/bin/bazelisk/bazel"
 
       - name: Alias bazel
         run:  alias bazel="${HOME}/bin/bazelisk/bazel"
