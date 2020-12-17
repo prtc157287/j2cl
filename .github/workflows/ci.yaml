@@ -54,7 +54,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${HOME}/bin/bazelisk
-          key: ${{ runner.os }}-binary-${{ env.BAZELISK_VERSION }}
+          key: ${{ runner.os }}-bazelisk-${{ env.BAZELISK_VERSION }}
 
       - name: Install bazelisk
         if: steps.bazelisk-cache.outputs.cache-hit != 'true'
